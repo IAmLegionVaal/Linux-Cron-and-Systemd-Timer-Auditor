@@ -1,49 +1,60 @@
 # Linux Cron and systemd Timer Auditor
 
-A read-only Bash toolkit for auditing scheduled Linux tasks across cron, anacron, at, and systemd timers.
+A Linux support toolkit for auditing and repairing selected cron services, systemd timers and schedule-file permission problems.
 
-## Purpose
-
-This project helps support and security engineers identify disabled schedules, missed executions, unsafe permissions, duplicate jobs, failed timer units, and persistence risks without changing any scheduled task.
-
-## Checks performed
-
-- User and system crontabs
-- `/etc/crontab`, `/etc/cron.d`, and periodic cron directories
-- Anacron configuration and spool state
-- Pending `at` jobs when available
-- Active, inactive, failed, and persistent systemd timers
-- Next and previous timer execution times
-- Timer and service unit relationships
-- Recent cron and timer journal events
-- World-writable or unexpectedly owned schedule files
-- Duplicate schedule lines and commands
-- Text, CSV, and JSON reports
-
-## Usage
+## Diagnostic script
 
 ```bash
 chmod +x src/cron_timer_auditor.sh
 sudo ./src/cron_timer_auditor.sh
 ```
 
+The audit reports user and system cron jobs, anacron, pending `at` jobs, systemd timers, missed or failed schedules, unsafe permissions and recent execution events.
+
+## Repair script
+
+Preview a timer repair:
+
 ```bash
-sudo ./src/cron_timer_auditor.sh --hours 72 --output /tmp/schedule-audit
+chmod +x src/cron_timer_repair.sh
+sudo ./src/cron_timer_repair.sh \
+  --timer backup.timer \
+  --action restart \
+  --dry-run
 ```
 
-## Safety
+Start, restart, enable, disable or clear failure state for one timer:
 
-The script does not enable, disable, start, stop, edit, delete, or create cron jobs, timers, services, or `at` jobs.
+```bash
+sudo ./src/cron_timer_repair.sh --timer backup.timer --action start
+sudo ./src/cron_timer_repair.sh --timer backup.timer --action enable
+sudo ./src/cron_timer_repair.sh --timer backup.timer --action reset-failed
+```
 
-## Privacy
+Restart the installed cron service:
 
-Scheduled commands can contain usernames, paths, internal hostnames, and occasionally embedded secrets. Review reports before sharing them.
+```bash
+sudo ./src/cron_timer_repair.sh --restart-cron
+```
 
-## Requirements
+Correct ownership and mode on one standard cron file:
 
-- Bash 4+
-- `systemctl` and `journalctl` for full timer evidence
-- Root privileges for complete system and user crontab visibility
+```bash
+sudo ./src/cron_timer_repair.sh --fix-file /etc/cron.d/example-job
+```
+
+## What the repair does
+
+- Restarts the installed cron or crond service.
+- Performs one explicit lifecycle action on one selected systemd timer.
+- Corrects root ownership and standard modes on one selected system cron file.
+- Backs up the selected schedule file before changing it.
+- Captures timer, cron-service and schedule-file state before and after repair.
+- Supports dry-run, confirmation prompts, logs and clear exit codes.
+
+## Safety and limitations
+
+The tool does not create, edit or delete cron commands or timer definitions. Disabling a timer stops future executions until it is enabled again. Review the scheduled command itself when failures are caused by the application rather than the scheduler.
 
 ## Author
 
