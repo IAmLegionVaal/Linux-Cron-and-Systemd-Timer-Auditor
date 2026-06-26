@@ -41,7 +41,7 @@ section() {
 
 csv_escape() {
   local value="$1"
-  value="${value//"/""}"
+  value="${value//\"/\"\"}"
   printf '"%s"' "$value"
 }
 
@@ -58,6 +58,8 @@ record_schedule() {
 have() { command -v "$1" >/dev/null 2>&1; }
 
 section "Collection metadata" bash -c 'date -Is; hostname -f 2>/dev/null || hostname; cat /etc/os-release 2>/dev/null || true; id'
+# Variables expand inside the child bash process.
+# shellcheck disable=SC2016
 section "System cron configuration" bash -c 'for f in /etc/crontab /etc/anacrontab; do [[ -r "$f" ]] && { echo "--- $f"; sed -n "1,240p" "$f"; }; done'
 section "Cron directories" bash -c 'find /etc/cron.d /etc/cron.hourly /etc/cron.daily /etc/cron.weekly /etc/cron.monthly -maxdepth 2 -type f -printf "%M %u:%g %TY-%Tm-%Td %TH:%TM %p\n" 2>/dev/null | sort || true'
 section "Cron spool inventory" bash -c 'find /var/spool/cron /var/spool/cron/crontabs -maxdepth 2 -type f -printf "%M %u:%g %TY-%Tm-%Td %TH:%TM %p\n" 2>/dev/null | sort || true'
@@ -82,7 +84,10 @@ parse_cron_file() {
   local file="$1" owner="$2" system_format="$3"
   [[ -r "$file" ]] || return 0
 
-  while IFS= read -r line; do
+  local -a cron_lines=()
+  mapfile -t cron_lines < "$file"
+  local line
+  for line in "${cron_lines[@]}"; do
     [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
     [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]] && continue
 
@@ -108,7 +113,7 @@ parse_cron_file() {
       fi
     fi
     record_schedule "$file" "$job_owner" "$schedule" "$command" "Configured"
-  done < "$file"
+  done
 }
 
 parse_cron_file /etc/crontab root true
@@ -122,7 +127,7 @@ for spool in /var/spool/cron/* /var/spool/cron/crontabs/*; do
 done
 
 if have systemctl; then
-  while IFS='|' read -r unit next left last passed activates; do
+  while IFS='|' read -r unit next _left last _passed activates; do
     [[ -z "$unit" ]] && continue
     TOTAL_TIMERS=$((TOTAL_TIMERS + 1))
     active_state="$(systemctl show "$unit" -p ActiveState --value 2>>"$ERRORS")"
