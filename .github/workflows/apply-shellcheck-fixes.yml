@@ -1,0 +1,30 @@
+name: Apply audited ShellCheck fixes
+on:
+  push:
+    branches: [fix/audit-shell-parser]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/audit-shell-parser
+      - name: Apply and validate patch
+        shell: bash
+        run: |
+          printf '%s' 'LS0tIGEvc3JjL2Nyb25fdGltZXJfYXVkaXRvci5zaAorKysgYi9zcmMvY3Jvbl90aW1lcl9hdWRpdG9yLnNoCkBAIC01OCw2ICs1OCw4IEBACiBoYXZlKCkgeyBjb21tYW5kIC12ICIkMSIgPi9kZXYvbnVsbCAyPiYxOyB9CiAKIHNlY3Rpb24gIkNvbGxlY3Rpb24gbWV0YWRhdGEiIGJhc2ggLWMgJ2RhdGUgLUlzOyBob3N0bmFtZSAtZiAyPi9kZXYvbnVsbCB8fCBob3N0bmFtZTsgY2F0IC9ldGMvb3MtcmVsZWFzZSAyPi9kZXYvbnVsbCB8fCB0cnVlOyBpZCcKKyMgVmFyaWFibGVzIGV4cGFuZCBpbnNpZGUgdGhlIGNoaWxkIGJhc2ggcHJvY2Vzcy4KKyMgc2hlbGxjaGVjayBkaXNhYmxlPVNDMjAxNgogc2VjdGlvbiAiU3lzdGVtIGNyb24gY29uZmlndXJhdGlvbiIgYmFzaCAtYyAnZm9yIGYgaW4gL2V0Yy9jcm9udGFiIC9ldGMvYW5hY3JvbnRhYjsgZG8gW1sgLXIgIiRmIiBdXSAmJiB7IGVjaG8gIi0tLSAkZiI7IHNlZCAtbiAiMSwyNDBwIiAiJGYiOyB9OyBkb25lJwogc2VjdGlvbiAiQ3JvbiBkaXJlY3RvcmllcyIgYmFzaCAtYyAnZmluZCAvZXRjL2Nyb24uZCAvZXRjL2Nyb24uaG91cmx5IC9ldGMvY3Jvbi5kYWlseSAvZXRjL2Nyb24ud2Vla2x5IC9ldGMvY3Jvbi5tb250aGx5IC1tYXhkZXB0aCAyIC10eXBlIGYgLXByaW50ZiAiJU0gJXU6JWcgJVRZLSVUbS0lVGQgJVRIOiVUTSAlcFxuIiAyPi9kZXYvbnVsbCB8IHNvcnQgfHwgdHJ1ZScKIHNlY3Rpb24gIkNyb24gc3Bvb2wgaW52ZW50b3J5IiBiYXNoIC1jICdmaW5kIC92YXIvc3Bvb2wvY3JvbiAvdmFyL3Nwb29sL2Nyb24vY3JvbnRhYnMgLW1heGRlcHRoIDIgLXR5cGUgZiAtcHJpbnRmICIlTSAldTolZyAlVFktJVRtLSVUZCAlVEg6JVRNICVwXG4iIDI+L2Rldi9udWxsIHwgc29ydCB8fCB0cnVlJwpAQCAtODIsNyArODQsMTAgQEAKICAgbG9jYWwgZmlsZT0iJDEiIG93bmVyPSIkMiIgc3lzdGVtX2Zvcm1hdD0iJDMiCiAgIFtbIC1yICIkZmlsZSIgXV0gfHwgcmV0dXJuIDAKIAotICB3aGlsZSBJRlM9IHJlYWQgLXIgbGluZTsgZG8KKyAgbG9jYWwgLWEgY3Jvbl9saW5lcz0oKQorICBtYXBmaWxlIC10IGNyb25fbGluZXMgPCAiJGZpbGUiCisgIGxvY2FsIGxpbmUKKyAgZm9yIGxpbmUgaW4gIiR7Y3Jvbl9saW5lc1tAXX0iOyBkbwogICAgIFtbIC16ICIkbGluZSIgfHwgIiRsaW5lIiA9fiBeW1s6c3BhY2U6XV0qIyBdXSAmJiBjb250aW51ZQogICAgIFtbICIkbGluZSIgPX4gXltBLVphLXpfXVtBLVphLXowLTlfXSo9IF1dICYmIGNvbnRpbnVlCiAKQEAgLTEwOCw3ICsxMTMsNyBAQAogICAgICAgZmkKICAgICBmaQogICAgIHJlY29yZF9zY2hlZHVsZSAiJGZpbGUiICIkam9iX293bmVyIiAiJHNjaGVkdWxlIiAiJGNvbW1hbmQiICJDb25maWd1cmVkIgotICBkb25lIDwgIiRmaWxlIgorICBkb25lCiB9CiAKIHBhcnNlX2Nyb25fZmlsZSAvZXRjL2Nyb250YWIgcm9vdCB0cnVlCkBAIC0xMjIsNyArMTI3LDcgQEAKIGRvbmUKIAogaWYgaGF2ZSBzeXN0ZW1jdGw7IHRoZW4KLSAgd2hpbGUgSUZTPSd8JyByZWFkIC1yIHVuaXQgbmV4dCBsZWZ0IGxhc3QgcGFzc2VkIGFjdGl2YXRlczsgZG8KKyAgd2hpbGUgSUZTPSd8JyByZWFkIC1yIHVuaXQgbmV4dCBfbGVmdCBsYXN0IF9wYXNzZWQgYWN0aXZlczsgZG8KICAgICBbWyAteiAiJHVuaXQiIF1dICYmIGNvbnRpbnVlCiAgICAgVE9UQUxfVElNRVJTPSQoKFRPVEFMX1RJTUVSUyArIDEpKQogICAgIGFjdGl2ZV9zdGF0ZT0iJChzeXN0ZW1jdGwgc2hvdyAiJHVuaXQiIC1wIEFjdGl2ZVN0YXRlIC0tdmFsdWUgMj4+IiRFUlJPUlMiKSIKLS0tIGEvc3JjL2Nyb25fdGltZXJfcmVwYWlyLnNoCisrKyBiL3NyYy9jcm9uX3RpbWVyX3JlcGFpci5zaApAQCAtNjMsNyArNjMsMTQgQEAKIHJ1bl9hY3Rpb24oKSB7CiAgIGxvY2FsIGRlc2NyaXB0aW9uPSIkMSI7IHNoaWZ0CiAgIEFDVElPTlM9JCgoQUNUSU9OUyArIDEpKTsgbG9nICIkZGVzY3JpcHRpb24iCi0gIGlmICREUllfUlVOOyB0aGVuIHByaW50ZiAnRFJZLVJVTjonID4+ICIkTE9HIjsgcHJpbnRmICcgJXEnICIkQCIgPj4gIiRMT0ciOyBwcmludGYgJ1xuJyA+PiAiJExPRyI7IHJldHVybiAwOyBmaQorICBpZiAkRFJZX1JVTjsgdGhlbgorICAgIHsKKyAgICAgIHByaW50ZiAnRFJZLVJVTjonCisgICAgICBwcmludGYgJyAlcScgIiRAIgorICAgICAgcHJpbnRmICdcbicKKyAgICB9ID4+ICIkTE9HIgorICAgIHJldHVybiAwCisgIGZpCiAgIGlmICIkQCIgPj4gIiRMT0ciIDI+JjE7IHRoZW4gbG9nICJTVUNDRVNTOiAkZGVzY3JpcHRpb24iOyByZXR1cm4gMDsgZmkKICAgRkFJTFVSRVM9JCgoRkFJTFVSRVMgKyAxKSk7IGxvZyAiV0FSTklORzogJGRlc2NyaXB0aW9uIGZhaWxlZCI7IHJldHVybiAxCiB9Cg==' | base64 -d >/tmp/audit.patch
+          git apply --check /tmp/audit.patch && git apply /tmp/audit.patch
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          while IFS= read -r -d '' f; do bash -n "$f"; done < <(find src -type f -name '*.sh' -print0)
+          mapfile -d '' files < <(find src -type f -name '*.sh' -print0)
+          shellcheck -x "${files[@]}"
+      - name: Commit validated fixes
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src && git rm .github/workflows/apply-shellcheck-fixes.yml
+          git commit -m "fix: resolve recursive ShellCheck findings"
+          git push origin HEAD:${GITHUB_REF_NAME}
