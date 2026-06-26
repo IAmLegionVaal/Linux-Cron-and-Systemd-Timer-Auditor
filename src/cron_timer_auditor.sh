@@ -114,7 +114,7 @@ parse_cron_file() {
     fi
     record_schedule "$file" "$job_owner" "$schedule" "$command" "Configured"
   done
-done
+}
 
 parse_cron_file /etc/crontab root true
 for file in /etc/cron.d/*; do
